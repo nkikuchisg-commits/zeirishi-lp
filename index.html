@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="中小企業・個人事業主の税務・経営をサポート。確定申告・法人税・相続税から節税対策・資金調達まで。初回相談60分無料。顧問先350件以上の実績。">
   <title>みらい税理士事務所 | 中小企業・個人事業主の税務・経営をサポート</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
 
     :root {
       --navy:       #1B2F55;
@@ -852,6 +854,28 @@
       #nav { padding: 1rem 1.8rem; }
       .nav-links { display: none; }
       .nav-hamburger { display: flex; }
+      /* ハンバーガーで開くモバイルメニュー */
+      .nav-links.open {
+        display: flex;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.1rem;
+        background: #fff;
+        padding: 1.2rem 1.8rem 1.5rem;
+        box-shadow: 0 14px 28px rgba(0,0,0,0.12);
+        border-bottom: 1px solid rgba(0,0,0,0.06);
+      }
+      .nav-links.open a:not(.nav-cta) { color: var(--text-mid); }
+    }
+
+    /* フォームのデモ送信用（未入力ハイライト・完了メッセージ） */
+    .input-err { border-color: #e11d48 !important; }
+    .form-done { color: #86efac !important; font-weight: 600; }
+    @media (max-width: 900px) {
 
       .hero-content { padding: 0 1.8rem; padding-top: 7rem; }
       .hero-stats { gap: 2rem; }
@@ -1309,7 +1333,7 @@
           </div>
           <div class="contact-detail-item">
             <div class="contact-detail-icon">📍</div>
-            <div>東京都渋谷区〇〇〇 1-2-3 ビル名4F</div>
+            <div>東京都渋谷区道玄坂 1-2-3 みらいビル 4F</div>
           </div>
         </div>
       </div>
@@ -1317,7 +1341,7 @@
         <div class="form-row">
           <div class="form-group">
             <label>お名前<span>*</span></label>
-            <input type="text" placeholder="田中 みらい">
+            <input type="text" id="zf-name" placeholder="田中 みらい">
           </div>
           <div class="form-group">
             <label>会社名 / 屋号</label>
@@ -1327,7 +1351,7 @@
         <div class="form-row">
           <div class="form-group">
             <label>メールアドレス<span>*</span></label>
-            <input type="email" placeholder="example@email.com">
+            <input type="email" id="zf-email" placeholder="example@email.com">
           </div>
           <div class="form-group">
             <label>電話番号</label>
@@ -1336,7 +1360,7 @@
         </div>
         <div class="form-group">
           <label>ご相談内容<span>*</span></label>
-          <select>
+          <select id="zf-topic">
             <option value="">選択してください</option>
             <option>確定申告・記帳</option>
             <option>法人税務・顧問契約</option>
@@ -1350,7 +1374,8 @@
           <label>詳細・ご要望</label>
           <textarea placeholder="お気軽にご記入ください（任意）"></textarea>
         </div>
-        <button class="form-submit">無料相談を申し込む →</button>
+        <button class="form-submit" id="zf-submit">無料相談を申し込む →</button>
+        <p class="form-note form-done" id="zf-done" hidden>✅ 送信を受け付けました（デモサイトのため、実際には送信されません）</p>
         <p class="form-note">送信後、1営業日以内にご連絡いたします。<br>個人情報は適切に管理し、第三者への提供は行いません。</p>
       </div>
     </div>
@@ -1372,7 +1397,7 @@
       <li><a href="#faq">FAQ</a></li>
       <li><a href="#contact">お問い合わせ</a></li>
     </ul>
-    <p class="footer-copy">© 2024 みらい税理士事務所. All Rights Reserved.</p>
+    <p class="footer-copy">© 2026 みらい税理士事務所. All Rights Reserved.</p>
   </div>
 </footer>
 
@@ -1403,6 +1428,34 @@
       document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
       if (!isOpen) item.classList.add('open');
     });
+  });
+
+  // モバイルメニュー（ハンバーガー開閉）
+  const hamburger = document.querySelector('.nav-hamburger');
+  const navLinks = document.querySelector('.nav-links');
+  hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a =>
+    a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // お問い合わせフォーム（デモ：必須チェックと完了表示のみ。実際の送信はしない）
+  document.getElementById('zf-submit').addEventListener('click', () => {
+    const required = [
+      document.getElementById('zf-name'),
+      document.getElementById('zf-email'),
+      document.getElementById('zf-topic'),
+    ];
+    let ok = true;
+    required.forEach(f => {
+      const bad = !f.value.trim();
+      f.classList.toggle('input-err', bad);
+      if (bad) ok = false;
+    });
+    const email = document.getElementById('zf-email');
+    if (email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+      email.classList.add('input-err');
+      ok = false;
+    }
+    document.getElementById('zf-done').hidden = !ok;
   });
 </script>
 </body>
